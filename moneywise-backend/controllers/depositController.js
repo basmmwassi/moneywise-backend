@@ -9,11 +9,11 @@ const createDeposit = async (req, res) => {
   let amountInILS = amount;
   if (currency !== 'ILS') {
     try {
-      const response = await axios.get(`https://api.frankfurter.app/latest?amount=${amount}&from=${currency}&to=ILS`);
-      if (response.data && response.data.rates && response.data.rates.ILS) {
+      const response = await axios.get(
+        `https://api.frankfurter.app/latest?amount=${amount}&from=${currency}&to=ILS`
+      );
+      if (response.data?.rates?.ILS) {
         amountInILS = response.data.rates.ILS;
-      } else {
-        return res.status(500).json({ message: 'Conversion API error' });
       }
     } catch (error) {
       console.error('Currency conversion failed:', error.message);
@@ -24,7 +24,6 @@ const createDeposit = async (req, res) => {
   const newDeposit = new Deposit({
     amount: amountInILS,
     source,
-    currency: 'ILS',
     userId: req.user.id
   });
 
