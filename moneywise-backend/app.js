@@ -16,8 +16,9 @@ require('dotenv').config();
 const app = express();
 dotenv.config();
  
+
 app.use(cors({
-  origin: 'http://127.0.0.1:5501',
+  origin: 'https://money-wise1.netlify.app',
   credentials: true,
   methods: ['GET', 'POST', 'DELETE', 'PUT', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
