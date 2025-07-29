@@ -156,7 +156,7 @@ router.get('/daily', protect, async (req, res) => {
 
 
 // GET /api/stats
-router.get('/', protect, async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const totalUsers = await User.countDocuments();
         const yesterday = new Date();
@@ -168,6 +168,7 @@ router.get('/', protect, async (req, res) => {
         res.status(500).json({ message: 'Error fetching stats', error: err.message });
     }
 });
+
 
 
 module.exports = router;
