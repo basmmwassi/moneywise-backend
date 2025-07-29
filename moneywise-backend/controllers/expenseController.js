@@ -10,8 +10,13 @@ const createExpense = async (req, res) => {
   if (currency !== 'ILS') {
     try {
       const response = await axios.get(`https://api.frankfurter.app/latest?amount=${amount}&from=${currency}&to=ILS`);
-      amountInILS = response.data.rates.ILS;
+      if (response.data && response.data.rates && response.data.rates.ILS) {
+        amountInILS = response.data.rates.ILS;
+      } else {
+        return res.status(500).json({ message: 'Conversion API error' });
+      }
     } catch (error) {
+      console.error('Currency conversion failed:', error.message);
       return res.status(500).json({ message: 'Currency conversion failed' });
     }
   }
@@ -26,6 +31,7 @@ const createExpense = async (req, res) => {
   await newExpense.save();
   res.status(201).json(newExpense);
 };
+
 
 
 const getTotalExpenses = async (req, res) => {
