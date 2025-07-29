@@ -5,7 +5,21 @@ const Deposit = require('../models/depositModel');
 const Expense = require('../models/expenseModel');
 const User = require('../models/User');
 
-// GET /balance
+// ✅ Total Users and New Customers
+router.get('/', async (req, res) => {
+    try {
+        const totalUsers = await User.countDocuments();
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const newCustomers = await User.countDocuments({ createdAt: { $gte: yesterday } });
+
+        res.json({ totalUsers, newCustomers });
+    } catch (err) {
+        res.status(500).json({ message: 'Error fetching stats', error: err.message });
+    }
+});
+
+// ✅ Balance
 router.get('/balance', protect, async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
@@ -16,7 +30,7 @@ router.get('/balance', protect, async (req, res) => {
     }
 });
 
-// GET /income-today
+// ✅ Income Today
 router.get('/income-today', protect, async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -30,7 +44,7 @@ router.get('/income-today', protect, async (req, res) => {
     res.json({ total });
 });
 
-// GET /expense-today
+// ✅ Expense Today
 router.get('/expense-today', protect, async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -44,7 +58,7 @@ router.get('/expense-today', protect, async (req, res) => {
     res.json({ total });
 });
 
-// GET /income-month
+// ✅ Income Month
 router.get('/income-month', protect, async (req, res) => {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -58,7 +72,7 @@ router.get('/income-month', protect, async (req, res) => {
     res.json({ total });
 });
 
-// GET /expense-month
+// ✅ Expense Month
 router.get('/expense-month', protect, async (req, res) => {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -72,7 +86,7 @@ router.get('/expense-month', protect, async (req, res) => {
     res.json({ total });
 });
 
-// GET /hourly
+// ✅ Hourly Stats
 router.get('/hourly', protect, async (req, res) => {
     try {
         const startOfDay = new Date();
@@ -112,7 +126,7 @@ router.get('/hourly', protect, async (req, res) => {
     }
 });
 
-// GET /daily
+// ✅ Daily Stats
 router.get('/daily', protect, async (req, res) => {
     try {
         const now = new Date();
@@ -151,25 +165,5 @@ router.get('/daily', protect, async (req, res) => {
         res.status(500).json({ message: 'Error generating daily stats', error: err.message });
     }
 });
-
-
-
-
-// GET /api/stats
-router.get('/', async (req, res) => {
-    try {
-        const totalUsers = await User.countDocuments();
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        const newCustomers = await User.countDocuments({ createdAt: { $gte: yesterday } });
-
-        res.json({ totalUsers, newCustomers });
-    } catch (err) {
-        res.status(500).json({ message: 'Error fetching stats', error: err.message });
-    }
-});
-
-
-
 
 module.exports = router;
