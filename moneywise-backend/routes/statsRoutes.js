@@ -152,4 +152,22 @@ router.get('/daily', protect, async (req, res) => {
     }
 });
 
+
+
+
+// GET /api/stats
+router.get('/', protect, async (req, res) => {
+    try {
+        const totalUsers = await User.countDocuments();
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const newCustomers = await User.countDocuments({ createdAt: { $gte: yesterday } });
+
+        res.json({ totalUsers, newCustomers });
+    } catch (err) {
+        res.status(500).json({ message: 'Error fetching stats', error: err.message });
+    }
+});
+
+
 module.exports = router;
