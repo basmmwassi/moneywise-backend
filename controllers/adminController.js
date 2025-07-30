@@ -154,7 +154,7 @@ const getTotalUsers = async (req, res) => {
 module.exports = {
   getAllUsers,
   getAllExpenses,
-  getTotalDeposits_all_users,
+  getTotalDepositsForAllUsers,
   deleteUser,
   getTopUsers,
   getUserDetails,
