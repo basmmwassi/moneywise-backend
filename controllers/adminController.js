@@ -40,7 +40,7 @@ const getAllExpenses = async (req, res) => {
 
 
 
-const getTotalDeposits = async (req, res) => {
+const getTotalDepositsForAllUsers = async (req, res) => {
   try {
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0); 
@@ -154,7 +154,7 @@ const getTotalUsers = async (req, res) => {
 module.exports = {
   getAllUsers,
   getAllExpenses,
-  getTotalDeposits,
+  getTotalDeposits_all_users,
   deleteUser,
   getTopUsers,
   getUserDetails,

@@ -11,12 +11,13 @@ const {
   getTopUsers,
   getUserDetails,
   getUserActivityChart,
-  getTotalUsers
+  getTotalUsers,
+  getTotalDepositsForAllUsers
 } = require("../controllers/adminController");
 
 router.get("/users", protect, checkRole("admin"), getAllUsers);
 router.get("/expenses", protect, checkRole("admin"), getAllExpenses);
-router.get("/deposits/total", protect, checkRole("admin"), getTotalDeposits);
+router.get("/deposits/total", protect, checkRole("admin"), getTotalDepositsForAllUsers);
 router.delete("/users/:id", protect, checkRole("admin"), deleteUser);
 router.get("/top-users", protect, checkRole("admin"), getTopUsers);
 router.get("/users/:id/details", protect, checkRole("admin"), getUserDetails);
