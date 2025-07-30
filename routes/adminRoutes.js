@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { protect } = require("../middleware/authMiddleware");
 const checkRole = require("../middleware/roleMiddleware");
+const { getTop3UsersWithExpensesIncome } = require('../controllers/adminController');
 
 const {
   getAllUsers,
@@ -14,7 +15,7 @@ const {
   getTotalUsers,
   getTotalDepositsForAllUsers,
   getStats,
-  getWeeklyDeposits
+  getWeeklyDeposits,
 } = require("../controllers/adminController");
 
 router.get("/users", protect, checkRole("admin"), getAllUsers);
@@ -27,6 +28,7 @@ router.get('/user-activity-chart', protect, checkRole("admin"), getUserActivityC
 router.get('/users/total', protect, checkRole("admin"), getTotalUsers);
 router.get('/stats', protect, checkRole("admin"), getStats);
 router.get('/deposits/weekly', protect, checkRole('admin'), getWeeklyDeposits);
+router.get('/top3-users-stats', protect, checkRole('admin'), getTop3UsersWithExpensesIncome);
 
 
 module.exports = router;

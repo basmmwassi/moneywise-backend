@@ -212,6 +212,45 @@ const getWeeklyDeposits = async (req, res) => {
 
 
 
+const getTop3UsersWithExpensesIncome = async (req, res) => {
+  try {
+    const lastWeek = new Date();
+    lastWeek.setDate(lastWeek.getDate() - 7);
+
+    const topUsers = await User.find({ role: 'user' })
+      .sort({ balance: -1 })
+      .limit(3)
+      .select('username');
+
+    const userStats = await Promise.all(
+      topUsers.map(async (user) => {
+        const totalExpenses = await Expense.aggregate([
+          { $match: { userId: user._id, createdAt: { $gte: lastWeek } } },
+          { $group: { _id: null, total: { $sum: '$amount' } } }
+        ]);
+
+        const totalIncome = await Deposit.aggregate([
+          { $match: { userId: user._id, createdAt: { $gte: lastWeek } } },
+          { $group: { _id: null, total: { $sum: '$amount' } } }
+        ]);
+
+        return {
+          username: user.username,
+          expenses: totalExpenses.length > 0 ? totalExpenses[0].total : 0,
+          income: totalIncome.length > 0 ? totalIncome[0].total : 0
+        };
+      })
+    );
+
+    res.status(200).json(userStats);
+  } catch (err) {
+    console.error('Error fetching top 3 users stats:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+
 module.exports = {
   getAllUsers,
   getAllExpenses,
@@ -222,5 +261,6 @@ module.exports = {
   getUserActivityChart,
   getTotalUsers,
   getStats,
-  getWeeklyDeposits
+  getWeeklyDeposits,
+  getTop3UsersWithExpensesIncome
 };
