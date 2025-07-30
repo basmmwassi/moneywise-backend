@@ -1,5 +1,5 @@
 const Deposit = require('../models/depositModel');
-const User = require('../models/User'); 
+const User = require('../models/User');
 
 const axios = require('axios');
 
@@ -28,6 +28,11 @@ const createDeposit = async (req, res) => {
   });
 
   await newDeposit.save();
+
+  const user = await User.findById(req.user.id);
+  user.balance += amountInILS;
+  await user.save()
+  
   res.status(201).json(newDeposit);
 };
 

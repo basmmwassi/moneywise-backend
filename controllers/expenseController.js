@@ -7,23 +7,28 @@ const createExpense = async (req, res) => {
   const { amount, category, currency } = req.body;
 
   let amountInILS = amount;
-if (currency !== 'ILS') {
-  const response = await axios.get(
-    `https://api.frankfurter.app/latest?amount=${amount}&from=${currency}&to=ILS`
-  );
-  if (response.data?.rates?.ILS) {
-    amountInILS = response.data.rates.ILS;
+  if (currency !== 'ILS') {
+    const response = await axios.get(
+      `https://api.frankfurter.app/latest?amount=${amount}&from=${currency}&to=ILS`
+    );
+    if (response.data?.rates?.ILS) {
+      amountInILS = response.data.rates.ILS;
+    }
   }
-}
 
-const newExpense = new Expense({
-  amount: amountInILS,
-  category,
-  userId: req.user.id
-});
+  const newExpense = new Expense({
+    amount: amountInILS,
+    category,
+    userId: req.user.id
+  });
 
 
   await newExpense.save();
+
+  const user = await User.findById(req.user.id);
+  user.balance -= amountInILS;
+  await user.save();
+
   res.status(201).json(newExpense);
 };
 
