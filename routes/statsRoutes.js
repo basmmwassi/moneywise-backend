@@ -5,6 +5,7 @@ const Deposit = require('../models/depositModel');
 const Expense = require('../models/expenseModel');
 const User = require('../models/User');
 
+
 // ✅ Total Users and New Customers
 
 router.get('/', async (req, res) => {
@@ -201,7 +202,7 @@ router.get('/daily', protect, async (req, res) => {
 
 
 
-router.get('/users/:id/details', auth, checkRole("admin"), async (req, res) => {
+router.get('/users/:id/details', protect, checkRole("admin"), async (req, res) => {
   try {
     const user = await User.findById(req.params.id);  
     if (!user) return res.status(404).json({ message: 'User not found' });
