@@ -22,19 +22,20 @@ const createDeposit = async (req, res) => {
   }
 
   const newDeposit = new Deposit({
-    amount: amountInILS,
-    source,
-    userId: req.user.id
-  });
+  amount: amountInILS,
+  source,
+  userId: req.user.id
+});
 
-  await newDeposit.save();
+await newDeposit.save();
 
-  const user = await User.findById(req.user.id);
-  const currentBalance = user.balance || 0; 
-  user.balance = currentBalance + amountInILS;
-  await user.save();
+const user = await User.findById(req.user.id);
+const currentBalance = user.balance || 0; 
+user.balance = currentBalance + amountInILS;
+await user.save();
 
-  res.status(201).json(newDeposit);
+res.status(201).json(newDeposit);
+
 };
 
 
