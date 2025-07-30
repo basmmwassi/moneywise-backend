@@ -151,6 +151,39 @@ const getTotalUsers = async (req, res) => {
 
 
 
+const getStats = async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments({ role: 'user' });
+
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const newCustomers = await User.countDocuments({
+      role: 'user',
+      createdAt: { $gte: startOfDay }
+    });
+
+    const totalDepositsResult = await Deposit.aggregate([
+      { $match: { date: { $gte: startOfDay } } },
+      { $group: { _id: null, total: { $sum: '$amount' } } }
+    ]);
+
+    const totalDeposits = totalDepositsResult.length > 0 ? totalDepositsResult[0].total : 0;
+
+    res.json({
+      totalUsers,
+      newCustomers,
+      totalDeposits
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error fetching stats', error: err.message });
+  }
+};
+
+
+
+
 module.exports = {
   getAllUsers,
   getAllExpenses,
@@ -159,5 +192,6 @@ module.exports = {
   getTopUsers,
   getUserDetails,
   getUserActivityChart,
-  getTotalUsers
+  getTotalUsers,
+  getStats
 };
