@@ -125,11 +125,11 @@ const getUserDetails = async (req, res) => {
 
 
 module.exports = {
-  getUserActivityChart,
   getAllUsers,
   getAllExpenses,
   getTotalDeposits,
   deleteUser,
   getTopUsers,
-  getUserDetails
+  getUserDetails,
+  getUserActivityChart
 };
