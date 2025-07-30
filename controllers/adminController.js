@@ -89,6 +89,7 @@ const getTopUsers = async (req, res) => {
 
 
 
+
 const getUserDetails = async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select("username email balance");
