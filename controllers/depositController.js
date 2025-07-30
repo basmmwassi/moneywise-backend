@@ -30,11 +30,13 @@ const createDeposit = async (req, res) => {
   await newDeposit.save();
 
   const user = await User.findById(req.user.id);
-  user.balance += amountInILS;
-  await user.save()
-  
+  const currentBalance = user.balance || 0; 
+  user.balance = currentBalance + amountInILS;
+  await user.save();
+
   res.status(201).json(newDeposit);
 };
+
 
 
 

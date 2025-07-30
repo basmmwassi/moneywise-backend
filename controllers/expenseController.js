@@ -65,12 +65,12 @@ const getExpenses = async (req, res) => {
 
 const getMonthlyExpensesByCategory = async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = new mongoose.Types.ObjectId(req.user.id);
     const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
     const endOfMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
 
     const summary = await Expense.aggregate([
-      { $match: { userId, date: { $gte: startOfMonth, $lte: endOfMonth } } },
+      { $match: { userId, createdAt: { $gte: startOfMonth, $lte: endOfMonth } } },
       { $group: { _id: '$category', total: { $sum: '$amount' } } }
     ]);
 

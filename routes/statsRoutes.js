@@ -9,43 +9,47 @@ const checkRole = require('../middleware/roleMiddleware');
 // ✅ Total Users and New Customers
 
 router.get('/', async (req, res) => {
-  try {
-    const totalUsers = await User.countDocuments();
+    try {
+        const totalUsers = await User.countDocuments();
 
-    const startOfToday = new Date();
-    startOfToday.setHours(0, 0, 0, 0);
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
 
-    const newCustomers = await User.countDocuments({ createdAt: { $gte: startOfToday } });
+        const newCustomers = await User.countDocuments({ createdAt: { $gte: startOfToday } });
 
-    res.json({ totalUsers, newCustomers });
-  } catch (err) {
-    res.status(500).json({ message: 'Error fetching stats', error: err.message });
-  }
+        res.json({ totalUsers, newCustomers });
+    } catch (err) {
+        res.status(500).json({ message: 'Error fetching stats', error: err.message });
+    }
 });
 
 
 
 
 router.get('/top-users', protect, checkRole('admin'), async (req, res) => {
-  try {
-    const users = await User.find().limit(5); 
-    res.json(users);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+    try {
+        const users = await User.find()
+            .sort({ balance: -1 })
+            .limit(5);
+        res.json(users);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 });
 
+
+
 router.get('/user-activity', protect, checkRole('admin'), async (req, res) => {
-  try {
-    const data = [
-      { date: '2025-07-01', deposits: 20 },
-      { date: '2025-07-02', deposits: 30 },
-      { date: '2025-07-03', deposits: 10 },
-    ];
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+    try {
+        const data = [
+            { date: '2025-07-01', deposits: 20 },
+            { date: '2025-07-02', deposits: 30 },
+            { date: '2025-07-03', deposits: 10 },
+        ];
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 });
 
 
@@ -201,18 +205,18 @@ router.get('/daily', protect, async (req, res) => {
 
 
 router.get('/users/:id/details', protect, checkRole("admin"), async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);  
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
 
-    res.json({
-      username: user.username,
-      email: user.email,
-      balance: user.balance
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching user details', error: error.message });
-  }
+        res.json({
+            username: user.username,
+            email: user.email,
+            balance: user.balance
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching user details', error: error.message });
+    }
 });
 
 module.exports = router;
