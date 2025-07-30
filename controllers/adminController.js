@@ -76,38 +76,22 @@ const getTopUsers = async (req, res) => {
   try {
     const topUsers = await User.aggregate([
       {
-        $lookup: {
-          from: 'expenses',
-          localField: '_id',
-          foreignField: 'userId',
-          as: 'expenses'
-        }
-      },
-      {
-        $lookup: {
-          from: 'deposits',
-          localField: '_id',
-          foreignField: 'userId',
-          as: 'deposits'
-        }
-      },
-      {
         $project: {
+          username: 1,
           email: 1,
           role: 1,
-          expensesCount: { $size: '$expenses' },
-          depositsCount: { $size: '$deposits' },
-          totalActivity: { $add: [{ $size: '$expenses' }, { $size: '$deposits' }] }
+          balance: 1
         }
       },
-      { $sort: { totalActivity: -1 } },
-      { $limit: 3 }
+      { $sort: { balance: -1 } },
+      { $limit: 5 }
     ]);
     res.json(topUsers);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching top users', error: err.message });
   }
 };
+
 
 
 const getUserDetails = async (req, res) => {
