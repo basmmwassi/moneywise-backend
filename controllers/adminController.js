@@ -3,15 +3,18 @@ const Expense = require('../models/expenseModel');
 const Deposit = require('../models/depositModel');
 const mongoose = require('mongoose');
 
-// ✅ Get all users (email + role only)
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({}, 'email role');
+    const users = await User.find({ role: 'user' }) 
+      .select('username email role balance')
+      .sort({ balance: -1 });
+
     res.json(users);
   } catch (err) {
-    res.status(500).json({ message: "Error fetching users", error: err.message });
+    res.status(500).json({ message: 'Error fetching users', error: err.message });
   }
 };
+
 
 const getUserActivityChart = async (req, res) => {
   try {
