@@ -17,12 +17,7 @@ const app = express();
 dotenv.config();
  
 
-app.use(cors({
-  origin: 'https://money-wise1.netlify.app',
-  credentials: true,
-  methods: ['GET', 'POST', 'DELETE', 'PUT', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(cors());
 
 app.use(express.json());
 
