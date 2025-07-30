@@ -13,7 +13,8 @@ const {
   getUserActivityChart,
   getTotalUsers,
   getTotalDepositsForAllUsers,
-  getStats
+  getStats,
+  getWeeklyDeposits
 } = require("../controllers/adminController");
 
 router.get("/users", protect, checkRole("admin"), getAllUsers);
@@ -25,6 +26,7 @@ router.get("/users/:id/details", protect, checkRole("admin"), getUserDetails);
 router.get('/user-activity-chart', protect, checkRole("admin"), getUserActivityChart);
 router.get('/users/total', protect, checkRole("admin"), getTotalUsers);
 router.get('/stats', protect, checkRole("admin"), getStats);
+router.get('/deposits/weekly', protect, checkRole('admin'), getWeeklyDeposits);
 
 
 module.exports = router;

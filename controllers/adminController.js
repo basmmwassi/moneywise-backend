@@ -184,6 +184,34 @@ const getStats = async (req, res) => {
 
 
 
+
+const getWeeklyDeposits = async (req, res) => {
+  try {
+    const weeklyData = await Deposit.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: new Date(new Date().setDate(new Date().getDate() - 6))
+          }
+        }
+      },
+      {
+        $group: {
+          _id: { $dayOfWeek: "$createdAt" },
+          total: { $sum: "$amount" }
+        }
+      },
+      { $sort: { "_id": 1 } }
+    ]);
+    res.json(weeklyData);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching weekly deposits' });
+  }
+};
+
+
+
+
 module.exports = {
   getAllUsers,
   getAllExpenses,
@@ -193,5 +221,6 @@ module.exports = {
   getUserDetails,
   getUserActivityChart,
   getTotalUsers,
-  getStats
+  getStats,
+  getWeeklyDeposits
 };
