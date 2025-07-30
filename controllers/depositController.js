@@ -1,6 +1,5 @@
 const Deposit = require('../models/depositModel');
 const User = require('../models/User');
-
 const axios = require('axios');
 
 const createDeposit = async (req, res) => {
@@ -22,35 +21,23 @@ const createDeposit = async (req, res) => {
   }
 
   const newDeposit = new Deposit({
-  amount: amountInILS,
-  source,
-  userId: req.user.id
-});
+    amount: amountInILS,
+    source,
+    userId: req.user.id
+  });
+  await newDeposit.save();
 
-await newDeposit.save();
+  const user = await User.findById(req.user.id);
+  user.balance = (user.balance || 0) + amountInILS;
+  await user.save();
 
-const user = await User.findById(req.user.id);
-const currentBalance = user.balance || 0; 
-user.balance = currentBalance + amountInILS;
-await user.save();
-
-res.status(201).json(newDeposit);
-
+  res.status(201).json(newDeposit);
 };
-
-
-
-
 
 const getTotalDeposits = async (req, res) => {
   try {
     const result = await Deposit.aggregate([
-      {
-        $group: {
-          _id: null,
-          total: { $sum: '$amount' }
-        }
-      }
+      { $group: { _id: null, total: { $sum: '$amount' } } }
     ]);
     const total = result.length > 0 ? result[0].total : 0;
     res.json({ total });
@@ -59,7 +46,4 @@ const getTotalDeposits = async (req, res) => {
   }
 };
 
-module.exports = {
-  createDeposit,
-  getTotalDeposits
-};
+module.exports = { createDeposit, getTotalDeposits };
