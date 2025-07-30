@@ -74,41 +74,11 @@ const deleteUser = async (req, res) => {
 
 const getTopUsers = async (req, res) => {
   try {
-    const topUsers = await User.aggregate([
-      {
-        $lookup: {
-          from: 'deposits',
-          localField: '_id',
-          foreignField: 'userId',
-          as: 'deposits'
-        }
-      },
-      {
-        $lookup: {
-          from: 'expenses',
-          localField: '_id',
-          foreignField: 'userId',
-          as: 'expenses'
-        }
-      },
-      {
-        $addFields: {
-          totalDeposits: { $sum: '$deposits.amount' },
-          totalExpenses: { $sum: '$expenses.amount' },
-          balance: { $subtract: [{ $sum: '$deposits.amount' }, { $sum: '$expenses.amount' }] }
-        }
-      },
-      {
-        $project: {
-          username: 1,
-          email: 1,
-          role: 1,
-          balance: 1
-        }
-      },
-      { $sort: { balance: -1 } },
-      { $limit: 5 }
-    ]);
+    const topUsers = await User.find({})
+      .select('username email balance')
+      .sort({ balance: -1 })
+      .limit(5);
+
     res.json(topUsers);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching top users', error: err.message });
