@@ -10,7 +10,8 @@ const {
   deleteUser,
   getTopUsers,
   getUserDetails,
-  getUserActivityChart
+  getUserActivityChart,
+  getTotalUsers
 } = require("../controllers/adminController");
 
 router.get("/users", protect, checkRole("admin"), getAllUsers);
@@ -20,5 +21,7 @@ router.delete("/users/:id", protect, checkRole("admin"), deleteUser);
 router.get("/top-users", protect, checkRole("admin"), getTopUsers);
 router.get("/users/:id/details", protect, checkRole("admin"), getUserDetails);
 router.get('/user-activity-chart', protect, checkRole("admin"), getUserActivityChart);
+router.get('/users/total', protect, checkRole("admin"), getTotalUsers);
+
 
 module.exports = router;

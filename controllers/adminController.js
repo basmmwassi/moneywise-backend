@@ -37,10 +37,23 @@ const getAllExpenses = async (req, res) => {
   }
 };
 
-// ✅ Get total deposits (income)
+
+
+
 const getTotalDeposits = async (req, res) => {
   try {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0); 
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999); 
+
     const result = await Deposit.aggregate([
+      {
+        $match: {
+          date: { $gte: startOfDay, $lte: endOfDay } 
+        }
+      },
       {
         $group: {
           _id: null,
@@ -48,12 +61,14 @@ const getTotalDeposits = async (req, res) => {
         }
       }
     ]);
+
     const total = result.length > 0 ? result[0].total : 0;
     res.json({ total });
   } catch (err) {
-    res.status(500).json({ message: 'Error calculating total deposits', error: err.message });
+    res.status(500).json({ message: 'Error fetching today\'s deposits', error: err.message });
   }
 };
+
 
 // ✅ Delete user by ID
 const deleteUser = async (req, res) => {
@@ -109,6 +124,17 @@ const getUserDetails = async (req, res) => {
 };
 
 
+const getTotalUsers = async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments({ role: 'user' }); 
+    res.json({ totalUsers });
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching total users', error: err.message });
+  }
+};
+
+
+
 
 module.exports = {
   getAllUsers,
@@ -117,5 +143,6 @@ module.exports = {
   deleteUser,
   getTopUsers,
   getUserDetails,
-  getUserActivityChart
+  getUserActivityChart,
+  getTotalUsers
 };
