@@ -63,20 +63,34 @@ const hourlyStats = async (req, res) => {
 
 const getStats = async (req, res) => {
   try {
-    const totalUsers = await User.countDocuments();
+    const totalUsers = await User.countDocuments({ role: 'user' });
 
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const newCustomers = await User.countDocuments({ createdAt: { $gte: yesterday } });
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const newCustomers = await User.countDocuments({
+      role: 'user',
+      createdAt: { $gte: startOfDay }
+    });
+
+    const totalDepositsResult = await Deposit.aggregate([
+      { $match: { date: { $gte: startOfDay } } },
+      { $group: { _id: null, total: { $sum: '$amount' } } }
+    ]);
+
+    const totalDeposits = totalDepositsResult.length > 0 ? totalDepositsResult[0].total : 0;
 
     res.json({
       totalUsers,
-      newCustomers
+      newCustomers,
+      totalDeposits
     });
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching stats' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error fetching stats', error: err.message });
   }
 };
+
 
 
 exports.getBalance = async (req, res) => {
