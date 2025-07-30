@@ -4,7 +4,7 @@ const { protect } = require('../middleware/authMiddleware');
 const Deposit = require('../models/depositModel');
 const Expense = require('../models/expenseModel');
 const User = require('../models/User');
-
+const checkRole = require('../middleware/roleMiddleware');
 
 // ✅ Total Users and New Customers
 
@@ -26,7 +26,7 @@ router.get('/', async (req, res) => {
 
 
 
-router.get('/top-users', async (req, res) => {
+router.get('/top-users', protect, checkRole('admin'), async (req, res) => {
   try {
     const users = await User.find().limit(5); 
     res.json(users);
@@ -35,9 +35,7 @@ router.get('/top-users', async (req, res) => {
   }
 });
 
-
-
-router.get('/user-activity', async (req, res) => {
+router.get('/user-activity', protect, checkRole('admin'), async (req, res) => {
   try {
     const data = [
       { date: '2025-07-01', deposits: 20 },
