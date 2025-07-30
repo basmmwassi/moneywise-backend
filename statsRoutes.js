@@ -4,7 +4,7 @@ const { protect } = require('../middleware/authMiddleware');
 const Deposit = require('../models/depositModel');
 const Expense = require('../models/expenseModel');
 const User = require('../models/User');
-const auth = require('../middleware/auth'); 
+const auth = require('../middleware/authMiddleware'); 
 
 
 // ✅ Total Users and New Customers
