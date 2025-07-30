@@ -4,6 +4,8 @@ const { protect } = require('../middleware/authMiddleware');
 const Deposit = require('../models/depositModel');
 const Expense = require('../models/expenseModel');
 const User = require('../models/User');
+const auth = require('../middleware/auth'); 
+
 
 // ✅ Total Users and New Customers
 
@@ -21,6 +23,34 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: 'Error fetching stats', error: err.message });
   }
 });
+
+
+
+
+router.get('/top-users', async (req, res) => {
+  try {
+    const users = await User.find().limit(5); 
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
+
+router.get('/user-activity', async (req, res) => {
+  try {
+    const data = [
+      { date: '2025-07-01', deposits: 20 },
+      { date: '2025-07-02', deposits: 30 },
+      { date: '2025-07-03', deposits: 10 },
+    ];
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 
 
 
