@@ -24,6 +24,34 @@ router.get('/', async (req, res) => {
 
 
 
+
+router.get('/top-users', async (req, res) => {
+  try {
+    const users = await User.find().limit(5); 
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
+
+router.get('/user-activity', async (req, res) => {
+  try {
+    const data = [
+      { date: '2025-07-01', deposits: 20 },
+      { date: '2025-07-02', deposits: 30 },
+      { date: '2025-07-03', deposits: 10 },
+    ];
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
+
+
 // ✅ Balance
 router.get('/balance', protect, async (req, res) => {
     try {
@@ -169,6 +197,23 @@ router.get('/daily', protect, async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: 'Error generating daily stats', error: err.message });
     }
+});
+
+
+
+router.get('/users/:id/details', auth, checkRole("admin"), async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);  
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    res.json({
+      username: user.username,
+      email: user.email,
+      balance: user.balance
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching user details', error: error.message });
+  }
 });
 
 module.exports = router;
