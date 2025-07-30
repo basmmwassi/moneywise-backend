@@ -22,18 +22,15 @@ const userSchema = new mongoose.Schema({
       required: true
   },
   permissions: {
-  type: [String],
-  default: []
-},
-isPaid: {
-  type: Boolean,
-  default: false
-},
-balance: {
+    type: [String],
+    default: []
+  },
+  balance: {
     type: Number,
     default: 0
   }
-});
+}, { timestamps: true }); 
+
 
 // Hash password before saving
 userSchema.pre('save', async function (next) {
