@@ -107,7 +107,7 @@ const deleteUser = async (req, res) => {
 
 const getTopUsers = async (req, res) => {
   try {
-    const topUsers = await User.find({})
+    const topUsers = await User.find({ role: 'user' })
       .select('username email role balance')
       .sort({ balance: -1 })
       .limit(5);
