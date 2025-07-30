@@ -112,16 +112,19 @@ const getTopUsers = async (req, res) => {
 
 const getUserDetails = async (req, res) => {
   try {
-    const userId = req.params.id;
-    const [expenses, deposits] = await Promise.all([
-      Expense.find({ userId }),
-      Deposit.find({ userId })
-    ]);
-    res.json({ expenses, deposits });
+    const user = await User.findById(req.params.id).select("username email balance");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.json({
+      username: user.username,
+      email: user.email,
+      balance: user.balance
+    });
   } catch (err) {
     res.status(500).json({ message: "Error fetching user data", error: err.message });
   }
 };
+
 
 
 module.exports = {
