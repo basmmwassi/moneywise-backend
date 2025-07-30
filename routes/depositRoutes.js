@@ -6,7 +6,6 @@ const { protect } = require('../middleware/authMiddleware');
 
 
 router.get('/total', getTotalDeposits);
-router.post('/', protect, createDeposit);
 
 
 router.post('/', protect, async (req, res) => {
