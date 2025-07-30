@@ -51,7 +51,21 @@ const getTotalDeposits = async (req, res) => {
     const result = await Deposit.aggregate([
       {
         $match: {
-          date: { $gte: startOfDay, $lte: endOfDay } 
+          date: { $gte: startOfDay, $lte: endOfDay }
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'user'
+        }
+      },
+      { $unwind: '$user' },
+      {
+        $match: {
+          'user.role': 'user'
         }
       },
       {
@@ -68,6 +82,7 @@ const getTotalDeposits = async (req, res) => {
     res.status(500).json({ message: 'Error fetching today\'s deposits', error: err.message });
   }
 };
+
 
 
 // ✅ Delete user by ID
