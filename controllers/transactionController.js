@@ -1,4 +1,4 @@
-const Income = require('../models/incomeModel');
+const Income = require('../models/depositModel');
 const Expense = require('../models/expenseModel');
 const User = require('../models/User');
 
