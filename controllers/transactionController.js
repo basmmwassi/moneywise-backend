@@ -27,22 +27,25 @@ const getUserExpenses = async (req, res) => {
 
 const deleteIncome = async (req, res) => {
     try {
-        const income = await Income.findById(req.params.id);
+        const income = await Deposit.findById(req.params.id); 
         if (!income) {
             return res.status(404).json({ message: 'Income not found' });
         }
 
         const user = await User.findById(income.userId);
-        user.balance -= income.amount;
-        await user.save();
+        if (user) {
+            user.balance -= income.amount;
+            await user.save();
+        }
 
-        await Income.findByIdAndDelete(req.params.id);
+        await Deposit.findByIdAndDelete(req.params.id);
 
         res.json({ message: 'Income deleted and balance updated' });
     } catch (err) {
         res.status(500).json({ message: 'Error deleting income', error: err.message });
     }
 };
+
 
 const deleteExpense = async (req, res) => {
     try {
@@ -52,8 +55,10 @@ const deleteExpense = async (req, res) => {
         }
 
         const user = await User.findById(expense.userId);
-        user.balance += expense.amount;
-        await user.save();
+        if (user) {
+            user.balance += expense.amount;
+            await user.save();
+        }
 
         await Expense.findByIdAndDelete(req.params.id);
 
@@ -62,6 +67,7 @@ const deleteExpense = async (req, res) => {
         res.status(500).json({ message: 'Error deleting expense', error: err.message });
     }
 };
+
 
 module.exports = { 
     getUserIncomes, 
