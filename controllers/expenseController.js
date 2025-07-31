@@ -19,7 +19,7 @@ const createExpense = async (req, res) => {
   const newExpense = new Expense({
     amount: amountInILS,
     category,
-    userId: req.user.id
+    userId: req.user.id,
   });
 
 
