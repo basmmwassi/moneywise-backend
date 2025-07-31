@@ -251,6 +251,82 @@ const getTop3UsersWithExpensesIncome = async (req, res) => {
 
 
 
+const getGrowthRate = async (req, res) => {
+  try {
+    const now = new Date();
+    const startCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startPreviousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const endPreviousMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+
+    const currentTotal = await Deposit.aggregate([
+      { $match: { createdAt: { $gte: startCurrentMonth } } },
+      { $group: { _id: null, total: { $sum: '$amount' } } }
+    ]);
+
+    const previousTotal = await Deposit.aggregate([
+      { $match: { createdAt: { $gte: startPreviousMonth, $lte: endPreviousMonth } } },
+      { $group: { _id: null, total: { $sum: '$amount' } } }
+    ]);
+
+    const current = currentTotal[0]?.total || 0;
+    const previous = previousTotal[0]?.total || 0;
+    const growthRate = previous === 0 ? 0 : ((current - previous) / previous) * 100;
+
+    res.json({ growthRate });
+  } catch (err) {
+    res.status(500).json({ message: 'Error calculating growth rate', error: err.message });
+  }
+};
+
+
+
+
+const getProfitReports = async (req, res) => {
+  try {
+    const totalIncome = await Deposit.aggregate([
+      { $group: { _id: null, total: { $sum: '$amount' } } }
+    ]);
+    const totalExpenses = await Expense.aggregate([
+      { $group: { _id: null, total: { $sum: '$amount' } } }
+    ]);
+
+    const income = totalIncome[0]?.total || 0;
+    const expenses = totalExpenses[0]?.total || 0;
+    const profit = income - expenses;
+    const margin = income === 0 ? 0 : ((profit / income) * 100);
+
+    const dailyAvg = income / 30;
+    const projection = dailyAvg * (30 - new Date().getDate());
+
+    res.json({ profit, margin, projection });
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching profit reports', error: err.message });
+  }
+};
+
+
+const getRecentTransactions = async (req, res) => {
+  try {
+    const deposits = await Deposit.find()
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .select('userId amount createdAt');
+    const expenses = await Expense.find()
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .select('userId amount createdAt');
+
+    const combined = [...deposits.map(d => ({ ...d.toObject(), type: 'Deposit' })), 
+                      ...expenses.map(e => ({ ...e.toObject(), type: 'Expense' }))];
+
+    const sorted = combined.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
+    res.json(sorted);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching transactions', error: err.message });
+  }
+};
+
+
 module.exports = {
   getAllUsers,
   getAllExpenses,
@@ -262,5 +338,8 @@ module.exports = {
   getTotalUsers,
   getStats,
   getWeeklyDeposits,
-  getTop3UsersWithExpensesIncome
+  getTop3UsersWithExpensesIncome,
+  getGrowthRate,
+  getProfitReports,
+  getRecentTransactions
 };
