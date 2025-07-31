@@ -327,6 +327,67 @@ const getRecentTransactions = async (req, res) => {
 };
 
 
+
+const getGrowthRateHistory = async (req, res) => {
+  try {
+    const history = [];
+
+    for (let i = 6; i >= 0; i--) {
+      const start = new Date();
+      start.setDate(start.getDate() - i);
+      start.setHours(0, 0, 0, 0);
+
+      const end = new Date();
+      end.setDate(end.getDate() - i);
+      end.setHours(23, 59, 59, 999);
+
+      const total = await Deposit.aggregate([
+        { $match: { createdAt: { $gte: start, $lte: end } } },
+        { $group: { _id: null, total: { $sum: '$amount' } } }
+      ]);
+
+      const rate = total[0]?.total || 0;
+      history.push({ date: start, rate });
+    }
+
+    res.json(history);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching growth rate history', error: err.message });
+  }
+};
+
+
+const getProfitData = async (req, res) => {
+  try {
+    const period = req.query.period || 'daily';
+
+    let startDate = new Date();
+    if (period === 'weekly') {
+      startDate.setDate(startDate.getDate() - 7);
+    } else {
+      startDate.setHours(0, 0, 0, 0);
+    }
+
+    const totalIncome = await Deposit.aggregate([
+      { $match: { createdAt: { $gte: startDate } } },
+      { $group: { _id: null, total: { $sum: '$amount' } } }
+    ]);
+
+    const totalExpenses = await Expense.aggregate([
+      { $match: { createdAt: { $gte: startDate } } },
+      { $group: { _id: null, total: { $sum: '$amount' } } }
+    ]);
+
+    const income = totalIncome[0]?.total || 0;
+    const expenses = totalExpenses[0]?.total || 0;
+
+    res.json({ income, expenses });
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching profit data', error: err.message });
+  }
+};
+
+
 module.exports = {
   getAllUsers,
   getAllExpenses,
@@ -341,5 +402,7 @@ module.exports = {
   getTop3UsersWithExpensesIncome,
   getGrowthRate,
   getProfitReports,
-  getRecentTransactions
+  getRecentTransactions,
+  getGrowthRateHistory,
+  getProfitData
 };
