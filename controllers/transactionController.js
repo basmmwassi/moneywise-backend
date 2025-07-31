@@ -25,24 +25,28 @@ const getUserExpenses = async (req, res) => {
 
 
 
+
 const deleteIncome = async (req, res) => {
     try {
-        const income = await Deposit.findById(req.params.id); 
+        const income = await Income.findById(req.params.id);
         if (!income) {
             return res.status(404).json({ message: 'Income not found' });
         }
 
         const user = await User.findById(income.userId);
-        if (user) {
-            user.balance -= income.amount;
-            await user.save();
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
         }
 
-        await Deposit.findByIdAndDelete(req.params.id);
+        user.balance -= income.amount;
+        await user.save();
 
-        res.json({ message: 'Income deleted and balance updated' });
-    } catch (err) {
-        res.status(500).json({ message: 'Error deleting income', error: err.message });
+        await Income.findByIdAndDelete(req.params.id);
+
+        res.json({ message: 'Income deleted and balance updated successfully' });
+    } catch (error) {
+        console.error('Delete Income Error:', error);
+        res.status(500).json({ message: 'Error deleting income', error: error.message });
     }
 };
 
@@ -55,18 +59,23 @@ const deleteExpense = async (req, res) => {
         }
 
         const user = await User.findById(expense.userId);
-        if (user) {
-            user.balance += expense.amount;
-            await user.save();
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
         }
+
+        user.balance += expense.amount;
+        await user.save();
 
         await Expense.findByIdAndDelete(req.params.id);
 
-        res.json({ message: 'Expense deleted and balance updated' });
-    } catch (err) {
-        res.status(500).json({ message: 'Error deleting expense', error: err.message });
+        res.json({ message: 'Expense deleted and balance updated successfully' });
+    } catch (error) {
+        console.error('Delete Expense Error:', error);
+        res.status(500).json({ message: 'Error deleting expense', error: error.message });
     }
 };
+
+
 
 
 module.exports = { 
