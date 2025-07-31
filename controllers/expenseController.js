@@ -70,20 +70,19 @@ const getMonthlyExpensesByCategory = async (req, res) => {
     const endOfMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
 
     const summary = await Expense.aggregate([
-  {
-    $match: {
-      userId,
-      $or: [
-        { createdAt: { $gte: startOfMonth, $lte: endOfMonth } },
-        { date: { $gte: startOfMonth, $lte: endOfMonth } }
-      ]
-    }
-  },
-  {
-    $group: { _id: '$category', total: { $sum: '$amount' } }
-  }
-]);
-
+      { 
+        $match: { 
+          userId : userId, 
+          date: { $gte: startOfMonth, $lte: endOfMonth } 
+        } 
+      },
+      { 
+        $group: { 
+          _id: '$category', 
+          total: { $sum: '$amount' } 
+        } 
+      }
+    ]);
 
     res.status(200).json(summary);
   } catch (err) {
@@ -91,6 +90,8 @@ const getMonthlyExpensesByCategory = async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 };
+
+
 
 
 
