@@ -28,7 +28,11 @@ const userSchema = new mongoose.Schema({
   balance: {
     type: Number,
     default: 0
-  }
+  },
+  accountCode: {
+     type: String,
+      required: true
+ }
 }, { timestamps: true }); 
 
 
