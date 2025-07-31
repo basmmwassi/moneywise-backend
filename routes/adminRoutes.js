@@ -33,7 +33,6 @@ router.get('/stats', protect, checkRole("admin"), getStats);
 router.get('/deposits/weekly', protect, checkRole('admin'), getWeeklyDeposits);
 router.get('/top3-users-stats', protect, checkRole('admin'), getTop3UsersWithExpensesIncome);
 router.get('/growth-rate', protect, checkRole('admin'), getGrowthRate);
-router.get('/profit-reports', protect, checkRole('admin'), getProfitReports);
 router.get('/recent-transactions', protect, checkRole('admin'), getRecentTransactions);
 router.get('/growth-rate/history', protect, checkRole('admin'), getGrowthRateHistory);
 
