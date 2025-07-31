@@ -8,6 +8,7 @@ const depositRoutes = require('./routes/depositRoutes');
 const statsRoutes = require('./routes/statsRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const userRoutes = require('./routes/userRouters');
+const transactionRoutes = require('./routes/transactionRoutes');
 
 
 dotenv.config();
@@ -17,7 +18,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Routes
+app.use('/api', transactionRoutes);
 app.use('/api/users', userRoutes);
 app.use("/api/admin", adminRoutes);
 app.use('/api/expenses', expenseRoutes);
