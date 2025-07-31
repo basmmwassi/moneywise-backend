@@ -7,7 +7,7 @@ const authRoutes = require('./routes/auth');
 const depositRoutes = require('./routes/depositRoutes');
 const statsRoutes = require('./routes/statsRoutes');
 const adminRoutes = require('./routes/adminRoutes');
-const userRoutes = require('./routes/userRoutes');
+const userRoutes = require('./routes/userRouters');
 
 
 dotenv.config();
