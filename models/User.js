@@ -29,10 +29,7 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  accountCode: {
-     type: String,
-      required: true
- }
+
 }, { timestamps: true }); 
 
 
