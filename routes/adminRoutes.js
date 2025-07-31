@@ -17,10 +17,8 @@ const {
   getStats,
   getWeeklyDeposits,
   getGrowthRate,
-  getProfitReports,
   getRecentTransactions,
   getGrowthRateHistory,
-  getProfitData
 } = require("../controllers/adminController");
 
 router.get("/users", protect, checkRole("admin"), getAllUsers);
@@ -37,7 +35,6 @@ router.get('/top3-users-stats', protect, checkRole('admin'), getTop3UsersWithExp
 router.get('/growth-rate', protect, checkRole('admin'), getGrowthRate);
 router.get('/profit-reports', protect, checkRole('admin'), getProfitReports);
 router.get('/recent-transactions', protect, checkRole('admin'), getRecentTransactions);
-router.get('/profit-data', protect, checkRole('admin'), getProfitData);
 router.get('/growth-rate/history', protect, checkRole('admin'), getGrowthRateHistory);
 
 

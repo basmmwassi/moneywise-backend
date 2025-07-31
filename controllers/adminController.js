@@ -281,28 +281,6 @@ const getGrowthRate = async (req, res) => {
 
 
 
-const getProfitReports = async (req, res) => {
-  try {
-    const totalIncome = await Deposit.aggregate([
-      { $group: { _id: null, total: { $sum: '$amount' } } }
-    ]);
-    const totalExpenses = await Expense.aggregate([
-      { $group: { _id: null, total: { $sum: '$amount' } } }
-    ]);
-
-    const income = totalIncome[0]?.total || 0;
-    const expenses = totalExpenses[0]?.total || 0;
-    const profit = income - expenses;
-    const margin = income === 0 ? 0 : ((profit / income) * 100);
-
-    const dailyAvg = income / 30;
-    const projection = dailyAvg * (30 - new Date().getDate());
-
-    res.json({ profit, margin, projection });
-  } catch (err) {
-    res.status(500).json({ message: 'Error fetching profit reports', error: err.message });
-  }
-};
 
 
 const getRecentTransactions = async (req, res) => {
@@ -357,35 +335,7 @@ const getGrowthRateHistory = async (req, res) => {
 };
 
 
-const getProfitData = async (req, res) => {
-  try {
-    const period = req.query.period || 'daily';
 
-    let startDate = new Date();
-    if (period === 'weekly') {
-      startDate.setDate(startDate.getDate() - 7);
-    } else {
-      startDate.setHours(0, 0, 0, 0);
-    }
-
-    const totalIncome = await Deposit.aggregate([
-      { $match: { createdAt: { $gte: startDate } } },
-      { $group: { _id: null, total: { $sum: '$amount' } } }
-    ]);
-
-    const totalExpenses = await Expense.aggregate([
-      { $match: { createdAt: { $gte: startDate } } },
-      { $group: { _id: null, total: { $sum: '$amount' } } }
-    ]);
-
-    const income = totalIncome[0]?.total || 0;
-    const expenses = totalExpenses[0]?.total || 0;
-
-    res.json({ income, expenses });
-  } catch (err) {
-    res.status(500).json({ message: 'Error fetching profit data', error: err.message });
-  }
-};
 
 
 module.exports = {
@@ -401,8 +351,6 @@ module.exports = {
   getWeeklyDeposits,
   getTop3UsersWithExpensesIncome,
   getGrowthRate,
-  getProfitReports,
   getRecentTransactions,
   getGrowthRateHistory,
-  getProfitData
 };
